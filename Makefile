@@ -16,4 +16,7 @@ test:
 check-java-deps:
 	./gradlew dependencyUpdates -Drevision=release
 
+sonar:
+	./gradlew sonar
+
 .PHONY: build
