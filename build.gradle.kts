@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
 	java
 	checkstyle
@@ -21,6 +24,8 @@ repositories {
 }
 
 dependencies {
+	implementation("org.mapstruct:mapstruct:1.5.5.Final")
+	annotationProcessor("org.mapstruct:mapstruct-processor:1.5.5.Final")
 	runtimeOnly("com.h2database:h2")
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -31,12 +36,24 @@ dependencies {
 	implementation("org.instancio:instancio-junit:3.3.1")
 	implementation("org.openapitools:jackson-databind-nullable:0.2.6")
 
+	implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+	testImplementation("org.springframework.security:spring-security-test")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation(platform("org.junit:junit-bom:5.10.0"))
+	testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+	testImplementation("net.javacrumbs.json-unit:json-unit-assertj:3.2.2")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	testLogging {
+		exceptionFormat = TestExceptionFormat.FULL
+		events = mutableSetOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+		showStandardStreams = true
+	}
 }
 
 sonar {
