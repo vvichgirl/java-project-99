@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,6 +61,7 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
+    @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
     @ResponseStatus(HttpStatus.OK)
     UserDTO update(@RequestBody UserUpdateDTO userData, @PathVariable Long id) {
         var user = userRepository.findById(id)
@@ -71,6 +73,7 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
+    @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void destroy(@PathVariable("id") long id) {
         userRepository.deleteById(id);
