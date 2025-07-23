@@ -20,6 +20,12 @@ public class UserUtils {
         return userRepository.findByEmail(email).get();
     }
 
+    public boolean isOwner(long userId) {
+        String ownerEmail = userRepository.findById(userId).get().getEmail();
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return ownerEmail.equals(authentication.getName());
+    }
+
     public User getTestUser() {
         return  userRepository.findByEmail("hexlet@example.com")
                 .orElseThrow(() -> new RuntimeException("User not found"));

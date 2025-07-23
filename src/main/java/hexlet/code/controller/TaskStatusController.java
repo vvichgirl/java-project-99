@@ -3,6 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.dto.status.TaskStatusCreateDTO;
 import hexlet.code.dto.status.TaskStatusDTO;
 import hexlet.code.dto.status.TaskStatusUpdateDTO;
+import hexlet.code.exception.RequestCannotBeProcessedException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.TaskStatusMapper;
 import hexlet.code.repository.TaskStatusRepository;
@@ -34,45 +35,52 @@ public class TaskStatusController {
 
     @GetMapping(path = "")
     ResponseEntity<List<TaskStatusDTO>> index() {
-        var users = taskStatusRepository.findAll();
-        var result = users.stream()
+        var taskStatuses = taskStatusRepository.findAll();
+        var result = taskStatuses.stream()
                 .map(taskStatusMapper::map)
                 .toList();
         return ResponseEntity.ok()
-                .header("X-Total-Count", String.valueOf(users.size()))
+                .header("X-Total-Count", String.valueOf(taskStatuses.size()))
                 .body(result);
     }
 
     @GetMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     TaskStatusDTO show(@PathVariable("id") long id) {
-        var user = taskStatusRepository.findById(id)
+        var taskStatus = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task status with id " + id + " not found"));
-        return taskStatusMapper.map(user);
+        return taskStatusMapper.map(taskStatus);
     }
 
     @PostMapping(path = "")
     @ResponseStatus(HttpStatus.CREATED)
     TaskStatusDTO create(@Valid @RequestBody TaskStatusCreateDTO taskStatusData) {
-        var status = taskStatusMapper.map(taskStatusData);
-        taskStatusRepository.save(status);
-        return taskStatusMapper.map(status);
+        var taskStatus = taskStatusMapper.map(taskStatusData);
+        taskStatusRepository.save(taskStatus);
+        return taskStatusMapper.map(taskStatus);
     }
 
     @PutMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     TaskStatusDTO update(@RequestBody TaskStatusUpdateDTO taskStatusData, @PathVariable Long id) {
-        var status = taskStatusRepository.findById(id)
+        var taskStatus = taskStatusRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task status with id " + id + " not found"));
-        taskStatusMapper.update(taskStatusData, status);
-        taskStatusRepository.save(status);
-        var taskStatusDTO = taskStatusMapper.map(status);
+        taskStatusMapper.update(taskStatusData, taskStatus);
+        taskStatusRepository.save(taskStatus);
+        var taskStatusDTO = taskStatusMapper.map(taskStatus);
         return taskStatusDTO;
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void destroy(@PathVariable("id") long id) {
-        taskStatusRepository.deleteById(id);
+
+        try {
+            taskStatusRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RequestCannotBeProcessedException(
+                    "There are tasks with this status. You can't delete this status."
+            );
+        }
     }
 }

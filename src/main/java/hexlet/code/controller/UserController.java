@@ -3,6 +3,7 @@ package hexlet.code.controller;
 import hexlet.code.dto.user.UserCreateDTO;
 import hexlet.code.dto.user.UserDTO;
 import hexlet.code.dto.user.UserUpdateDTO;
+import hexlet.code.exception.RequestCannotBeProcessedException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.repository.UserRepository;
@@ -73,9 +74,13 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/{id}")
-    @PreAuthorize("@userRepository.findById(#id).get().getEmail() == authentication.name")
+    @PreAuthorize("@userUtils.isOwner(#id)")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void destroy(@PathVariable("id") long id) {
-        userRepository.deleteById(id);
+        try {
+            userRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new RequestCannotBeProcessedException("The user has active tasks. You can't delete the user.");
+        }
     }
 }
