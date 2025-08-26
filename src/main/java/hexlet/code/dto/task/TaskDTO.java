@@ -6,12 +6,14 @@ import lombok.Setter;
 import org.openapitools.jackson.nullable.JsonNullable;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter
 @Getter
 public class TaskDTO {
 
-    private long id;
+    private Long id;
 
     private JsonNullable<Integer> index;
 
@@ -23,6 +25,8 @@ public class TaskDTO {
 
     @JsonProperty("assignee_id")
     private JsonNullable<Long> assigneeId;
+
+    private List<Long> taskLabelIds = new ArrayList<>();
 
     private LocalDate createdAt;
 }
