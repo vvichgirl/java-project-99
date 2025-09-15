@@ -8,6 +8,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.7"
 	id("org.sonarqube") version "6.2.0.5505"
 	id("io.freefair.lombok") version "8.6"
+	id("io.sentry.jvm.gradle") version "5.10.0"
 }
 
 group = "hexlet.code"
@@ -17,6 +18,10 @@ java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
+}
+
+application {
+	mainClass = "hexlet.code.AppApplication"
 }
 
 repositories {
@@ -65,4 +70,16 @@ sonar {
 		property("sonar.organization", "vvichgirl")
 		property("sonar.host.url", "https://sonarcloud.io")
 	}
+}
+
+sentry {
+	includeSourceContext = true
+
+	org = "viktoriya-pk"
+	projectName = "java-spring-boot"
+	authToken = System.getenv("SENTRY_AUTH_TOKEN")
+}
+
+tasks.sentryBundleSourcesJava {
+	enabled = System.getenv("SENTRY_AUTH_TOKEN") != null
 }
