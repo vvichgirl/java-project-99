@@ -73,7 +73,6 @@ public class TaskStatusControllerTest {
 
     @BeforeEach
     public void setUp() {
-        userRepository.deleteAll();
         taskRepository.deleteAll();
         taskStatusRepository.deleteAll();
 

@@ -83,8 +83,8 @@ public class TaskControllerTest {
 
     @BeforeEach
     public void setUp() {
-        userRepository.deleteAll();
         taskRepository.deleteAll();
+        taskStatusRepository.deleteAll();
 
         mockMvc = MockMvcBuilders.webAppContextSetup(wac)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
@@ -103,6 +103,7 @@ public class TaskControllerTest {
         Set<Label> labels = Set.of(testLabel);
 
         testTask = Instancio.of(modelGenerator.getTaskModel()).create();
+        testTask.setAssignee(testUser);
         testTask.setTaskStatus(testTaskStatus);
         testTask.setLabels(labels);
         taskRepository.save(testTask);
@@ -122,6 +123,62 @@ public class TaskControllerTest {
     }
 
     @Test
+    public void testIndexWithTitleContains() throws Exception {
+        var result = mockMvc.perform(get("/api/tasks?name="
+                        + testTask.getName()).with(jwt()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).isArray().allSatisfy(element ->
+                assertThatJson(element)
+                        .and(v -> v.node("title").asString().containsIgnoringCase(testTask.getName())));
+    }
+
+    @Test
+    public void testIndexWithAssigneeId() throws Exception {
+        var result = mockMvc.perform(get("/api/tasks?assigneeId="
+                    +  testTask.getAssignee().getId()).with(jwt()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).isArray().allSatisfy(element ->
+                assertThatJson(element)
+                        .and(v -> v.node("assignee_id").isEqualTo(testTask.getAssignee().getId()))
+        );
+    }
+
+    @Test
+    public void testIndexWithStatus() throws Exception {
+        var result = mockMvc.perform(get("/api/tasks?status="
+                        +  testTask.getTaskStatus().getSlug()).with(jwt()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).isArray().allSatisfy(element ->
+                assertThatJson(element)
+                        .and(v -> v.node("status").isEqualTo(testTask.getTaskStatus().getSlug()))
+        );
+    }
+
+    @Test
+    public void testIndexWithLabelIds() throws Exception {
+        var result = mockMvc.perform(get("/api/tasks?labelId="
+                        +  testLabel.getId()).with(jwt()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var body = result.getResponse().getContentAsString();
+        assertThatJson(body).isArray().allSatisfy(element ->
+                assertThatJson(element)
+                        .and(v -> v.node("taskLabelIds").isArray()
+                                .contains(Long.valueOf(testLabel.getId())))
+        );
+    }
+
+    @Test
     public void testShow() throws Exception {
         var request = get("/api/tasks/" + testTask.getId()).with(jwt());
         var result = mockMvc.perform(request)
@@ -136,13 +193,17 @@ public class TaskControllerTest {
 
     @Test
     public void testCreate() throws Exception {
-        var data = Instancio.of(modelGenerator.getTaskModel())
+        var taskData = Instancio.of(modelGenerator.getTaskModel())
                 .create();
+        taskData.setAssignee(testUser);
+        taskData.setTaskStatus(testTaskStatus);
+        taskData.setLabels(Set.of(testLabel));
+        var dto = taskMapper.map(taskData);
 
         var request = post("/api/tasks")
                 .with(token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(om.writeValueAsString(data));
+                .content(om.writeValueAsString(dto));
 
         var result = mockMvc.perform(request)
                 .andExpect(status().isCreated())
@@ -150,13 +211,29 @@ public class TaskControllerTest {
 
         String body = result.getResponse().getContentAsString();
 
-        Task task = taskRepository.findById(data.getId()).orElseThrow();
+        Task task = taskRepository.findByName(taskData.getName()).orElseThrow();
 
         assertNotNull(task);
         assertThatJson(body).and(
-                v -> v.node("title").isEqualTo(testTask.getName()),
-                v -> v.node("content").isEqualTo(testTask.getDescription())
+                v -> v.node("title").isEqualTo(taskData.getName()),
+                v -> v.node("content").isEqualTo(taskData.getDescription())
         );
+    }
+
+    @Test
+    public void testCreateWithoutName() throws Exception {
+        var taskData = Instancio.of(modelGenerator.getTaskModel())
+                .create();
+        taskData.setName("");
+        var dto = taskMapper.map(taskData);
+
+        var request = post("/api/tasks")
+                .with(token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(om.writeValueAsString(dto));
+
+        mockMvc.perform(request)
+                .andExpect(status().isBadRequest());
     }
 
     @Test

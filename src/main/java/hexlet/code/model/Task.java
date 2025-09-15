@@ -14,7 +14,6 @@ import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -27,35 +26,28 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @Entity
 @Table(name = "tasks")
 @EntityListeners(AuditingEntityListener.class)
-@ToString(includeFieldNames = true, onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Getter
 @Setter
 public class Task {
     @Id
-    @ToString.Include
     @GeneratedValue(strategy = IDENTITY)
     @EqualsAndHashCode.Include
     private Long id;
 
-    @ToString.Include
     @NotBlank
     @Size(min = 1)
     private String name;
 
-    @ToString.Include
     private Integer index;
 
-    @ToString.Include
     private String description;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @ToString.Include
     private TaskStatus taskStatus;
 
     @ManyToOne()
-    @ToString.Include
     private User assignee;
 
     @ManyToMany(fetch = FetchType.LAZY)
