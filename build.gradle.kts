@@ -4,9 +4,10 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 plugins {
 	application
 	checkstyle
+	jacoco
 	id("org.springframework.boot") version "3.5.3"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("org.sonarqube") version "6.2.0.5505"
+	id("org.sonarqube") version "6.3.1.5724"
 	id("io.freefair.lombok") version "8.6"
 	id("io.sentry.jvm.gradle") version "5.10.0"
 }
@@ -57,10 +58,17 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+	finalizedBy(tasks.jacocoTestReport)
 	testLogging {
 		exceptionFormat = TestExceptionFormat.FULL
 		events = mutableSetOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
 		showStandardStreams = true
+	}
+}
+
+tasks.jacocoTestReport {
+	reports {
+		xml.required.set(true)
 	}
 }
 
