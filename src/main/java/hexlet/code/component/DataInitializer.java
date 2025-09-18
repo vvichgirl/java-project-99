@@ -46,16 +46,20 @@ public class DataInitializer implements ApplicationRunner {
         }
 
         for (String slug : SLUGS) {
-            var status = new TaskStatus();
-            status.setSlug(slug);
-            status.setName(slug);
-            statusRepository.save(status);
+            if (statusRepository.findBySlug(slug).isEmpty()) {
+                var status = new TaskStatus();
+                status.setSlug(slug);
+                status.setName(slug);
+                statusRepository.save(status);
+            }
         }
 
         for (String name : LABEL_NAMES) {
-            var  label = new Label();
-            label.setName(name);
-            labelRepository.save(label);
+            if (labelRepository.findByName(name).isEmpty()) {
+                var label = new Label();
+                label.setName(name);
+                labelRepository.save(label);
+            }
         }
     }
 }
