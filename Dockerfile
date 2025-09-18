@@ -1,4 +1,4 @@
-FROM gradle:8.12.1-jdk21
+FROM gradle:9.0.0-jdk21
 
 WORKDIR /
 
@@ -9,3 +9,5 @@ RUN gradle installDist
 CMD ./build/install/app/bin/app
 
 ENV SPRING_PROFILES_ACTIVE=production
+
+EXPOSE 8080
