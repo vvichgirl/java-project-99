@@ -10,4 +10,4 @@ CMD ./build/install/app/bin/app
 
 ENV SPRING_PROFILES_ACTIVE=production
 
-EXPOSE 8080
+EXPOSE ${PORT}

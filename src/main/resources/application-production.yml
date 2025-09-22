@@ -4,3 +4,6 @@ spring:
     username: ${USERNAME}
     password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver
+
+server:
+  port: ${PORT}

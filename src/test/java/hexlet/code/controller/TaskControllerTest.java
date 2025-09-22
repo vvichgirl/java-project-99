@@ -174,7 +174,7 @@ public class TaskControllerTest {
         assertThatJson(body).isArray().allSatisfy(element ->
                 assertThatJson(element)
                         .and(v -> v.node("taskLabelIds").isArray()
-                                .contains(Long.valueOf(testLabel.getId())))
+                                .contains(testLabel.getId()))
         );
     }
 
