@@ -1,10 +1,13 @@
 package hexlet.code.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import hexlet.code.dto.user.UserDTO;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.model.User;
 import hexlet.code.repository.TaskRepository;
 import hexlet.code.util.ModelGenerator;
 import net.datafaker.Faker;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -31,6 +34,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -95,7 +99,10 @@ class UserControllerTest {
 
         String body = response.getContentAsString();
 
-        assertThatJson(body).isArray();
+        List<UserDTO> userDTOS = om.readValue(body, new TypeReference<>() { });
+        var actual = userDTOS.stream().map(userMapper::map).toList();
+        var expected = userRepository.findAll();
+        Assertions.assertThat(actual).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @Test

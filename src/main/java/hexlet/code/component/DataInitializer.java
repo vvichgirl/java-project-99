@@ -8,7 +8,6 @@ import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.repository.UserRepository;
 import hexlet.code.service.CustomUserDetailsService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
@@ -19,17 +18,13 @@ import java.util.Set;
 @AllArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 
-    @Autowired
-    private final UserRepository userRepository;
+    private UserRepository userRepository;
 
-    @Autowired
-    private final CustomUserDetailsService userService;
+    private CustomUserDetailsService userService;
 
-    @Autowired
-    private final TaskStatusRepository statusRepository;
+    private TaskStatusRepository statusRepository;
 
-    @Autowired
-    private final LabelRepository labelRepository;
+    private LabelRepository labelRepository;
 
     private static final Set<String> SLUGS = Set.of("draft", "to_review", "to_be_fixed", "to_publish", "published");
     private static final Set<String> LABEL_NAMES = Set.of("feature", "bug");

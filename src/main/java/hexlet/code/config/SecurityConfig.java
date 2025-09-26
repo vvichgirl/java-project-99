@@ -44,6 +44,7 @@ public class SecurityConfig {
                         .requestMatchers("/welcome").permitAll()
                         .requestMatchers("/test").permitAll()
                         .requestMatchers("/index.html").permitAll()
+                        .requestMatchers("/favicon.ico").permitAll()
                         .requestMatchers("/assets/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
