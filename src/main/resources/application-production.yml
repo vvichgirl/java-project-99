@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: production
   datasource:
     url: ${JDBC_DATABASE_URL}
     username: ${USERNAME}

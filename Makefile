@@ -1,5 +1,5 @@
 app:
-	./gradlew bootRun --args='--spring.profiles.active=dev'
+	./gradlew bootRun
 
 clean:
 	./gradlew clean
