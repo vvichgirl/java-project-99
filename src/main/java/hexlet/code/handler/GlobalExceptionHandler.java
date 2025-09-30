@@ -1,7 +1,7 @@
 package hexlet.code.handler;
 
-import hexlet.code.exception.RequestCannotBeProcessedException;
 import hexlet.code.exception.ResourceNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,9 +16,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(RequestCannotBeProcessedException.class)
-    public ResponseEntity<String> handleRequestCannotBeProcessedException(RequestCannotBeProcessedException ex) {
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(ex.getMessage());
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                "Data integrity error. The data may already exist or constraints may have been violated."
+                + "\n"
+                + ex.getMessage()
+        );
     }
 
     @ExceptionHandler(Exception.class)

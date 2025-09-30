@@ -203,6 +203,6 @@ public class LabelControllerTest {
 
         var request = delete("/api/labels/" + testLabel.getId()).with(token);
         mockMvc.perform(request).
-                andExpect(status().isUnprocessableEntity());
+                andExpect(status().isConflict());
     }
 }

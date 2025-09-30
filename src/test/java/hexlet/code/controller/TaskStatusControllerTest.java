@@ -233,6 +233,6 @@ public class TaskStatusControllerTest {
 
         var request = delete("/api/task_statuses/" + testTaskStatus.getId()).with(token);
         mockMvc.perform(request).
-                andExpect(status().isUnprocessableEntity());
+                andExpect(status().isConflict());
     }
 }

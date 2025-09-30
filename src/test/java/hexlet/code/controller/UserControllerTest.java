@@ -3,8 +3,13 @@ package hexlet.code.controller;
 import com.fasterxml.jackson.core.type.TypeReference;
 import hexlet.code.dto.user.UserDTO;
 import hexlet.code.mapper.UserMapper;
+import hexlet.code.model.Label;
+import hexlet.code.model.Task;
+import hexlet.code.model.TaskStatus;
 import hexlet.code.model.User;
+import hexlet.code.repository.LabelRepository;
 import hexlet.code.repository.TaskRepository;
+import hexlet.code.repository.TaskStatusRepository;
 import hexlet.code.util.ModelGenerator;
 import net.datafaker.Faker;
 import org.assertj.core.api.Assertions;
@@ -35,6 +40,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -63,6 +69,12 @@ class UserControllerTest {
 
     @Autowired
     private TaskRepository taskRepository;
+
+    @Autowired
+    private TaskStatusRepository taskStatusRepository;
+
+    @Autowired
+    private LabelRepository labelRepository;
 
     @Autowired
     private UserMapper userMapper;
@@ -213,6 +225,26 @@ class UserControllerTest {
         boolean existUser = userRepository.existsById(testUser.getId());
 
         assertFalse(existUser);
+    }
+
+    @Test
+    public void testDestroyIfExistTask() throws Exception {
+        Label testLabel = Instancio.of(modelGenerator.getLabelModel()).create();
+        labelRepository.save(testLabel);
+        Set<Label> labels = Set.of(testLabel);
+
+        TaskStatus testTaskStatus = Instancio.of(modelGenerator.getTaskStatusModel()).create();
+        taskStatusRepository.save(testTaskStatus);
+
+        Task testTask = Instancio.of(modelGenerator.getTaskModel()).create();
+        testTask.setTaskStatus(testTaskStatus);
+        testTask.setLabels(labels);
+        testTask.setAssignee(testUser);
+        taskRepository.save(testTask);
+
+        var request = delete("/api/users/" + testUser.getId()).with(token);
+        mockMvc.perform(request).
+                andExpect(status().isConflict());
     }
 
     @Test

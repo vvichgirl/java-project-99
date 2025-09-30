@@ -3,7 +3,6 @@ package hexlet.code.service.implementation;
 import hexlet.code.dto.user.UserCreateDTO;
 import hexlet.code.dto.user.UserDTO;
 import hexlet.code.dto.user.UserUpdateDTO;
-import hexlet.code.exception.RequestCannotBeProcessedException;
 import hexlet.code.exception.ResourceNotFoundException;
 import hexlet.code.mapper.UserMapper;
 import hexlet.code.repository.TaskRepository;
@@ -57,11 +56,6 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public void delete(Long id) {
-        if (taskRepository.existsByAssigneeId(id)) {
-            throw new RequestCannotBeProcessedException(
-                    "The user has active tasks. You can't delete the user."
-            );
-        }
         userRepository.deleteById(id);
     }
 }
