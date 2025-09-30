@@ -25,7 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 public class LabelController {
 
-    private LabelService labelService;
+    private final LabelService labelService;
 
     @GetMapping(path = "")
     ResponseEntity<List<LabelDTO>> index() {

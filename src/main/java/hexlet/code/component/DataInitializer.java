@@ -18,13 +18,13 @@ import java.util.Set;
 @AllArgsConstructor
 public class DataInitializer implements ApplicationRunner {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private CustomUserDetailsService userService;
+    private final CustomUserDetailsService userService;
 
-    private TaskStatusRepository statusRepository;
+    private final TaskStatusRepository statusRepository;
 
-    private LabelRepository labelRepository;
+    private final LabelRepository labelRepository;
 
     private static final Set<String> SLUGS = Set.of("draft", "to_review", "to_be_fixed", "to_publish", "published");
     private static final Set<String> LABEL_NAMES = Set.of("feature", "bug");

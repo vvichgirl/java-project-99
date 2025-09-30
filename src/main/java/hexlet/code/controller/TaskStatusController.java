@@ -25,7 +25,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TaskStatusController {
 
-    private TaskStatusService taskStatusService;
+    private final TaskStatusService taskStatusService;
 
     @GetMapping(path = "")
     ResponseEntity<List<TaskStatusDTO>> index() {

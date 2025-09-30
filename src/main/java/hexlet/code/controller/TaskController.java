@@ -26,7 +26,7 @@ import java.util.List;
 @AllArgsConstructor
 public class TaskController {
 
-    private TaskService taskService;
+    private final TaskService taskService;
 
     @GetMapping(path = "")
     ResponseEntity<List<TaskDTO>> index(TaskParamsDTO params) {
